@@ -19,8 +19,8 @@ app.get('/', function (req, res) {
 
 // Remember to paste here your credentials
 var spotifyApi = new SpotifyWebApi({
-  clientId: 'b72796df428c4c0c8bdbf6c6721ae730',
-  clientSecret: 'add1adee3dd9471693b1ed93788c937e',
+  clientId: '',
+  clientSecret: '',
   redirectUri: 'http://localhost:3000/callback'
 });
 
