@@ -1,12 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Music Mosaic</title>
-  </head>
-  <body>
-    <h1>Welcome to Music Mosaic</h1>
-    <p>
-      <a href="/login">Log in with Spotify</a>
-    </p>
-  </body>
+<head>
+    <title>MusicMosaic: Discover Music in a New Way</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <h1>MusicMosaic</h1>
+        <p>Discover music based on your mood and atmosphere.</p>
+    </header>
+
+    <main>
+        <div id="login-container" hidden>
+            <button id="login-button">Log in with Spotify</button>
+        </div>
+
+        <div id="search-container" hidden>
+            <form id="search-form">
+                <input type="text" id="search-input" name="search" placeholder="Describe the music you're looking for..." required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <section id="results-section" hidden>
+            <h2>Results</h2>
+            <ul id="results-list"></ul>
+        </section>
+    </main>
+
+    <script src="/js/client.js"></script>
+</body>
 </html>
