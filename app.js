@@ -1,5 +1,21 @@
 const express = require('express');
 const SpotifyWebApi = require('spotify-web-api-node');
+var searchRouter = require('./routes/search');
+var bodyParser = require('body-parser');
+
+const app = express();
+const port = 3000;
+
+app.use(express.static('public'));
+
+app.use(bodyParser.urlencoded({ extended: false}));
+app.use(bodyParser.json());
+
+app.use('/search', searchRouter)
+
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/public/index.html');
+  });
 
 // Remember to paste here your credentials
 var spotifyApi = new SpotifyWebApi({
@@ -35,4 +51,8 @@ app.get('/callback', (req, res) => {
     .catch(err => {
       console.log('Something went wrong!', err);
     });
+});
+
+app.listen(port, () => {
+    console.log('App listening at http://localhost:${port}');
 });
