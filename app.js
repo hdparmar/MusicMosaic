@@ -1,21 +1,16 @@
 const express = require('express');
 const SpotifyWebApi = require('spotify-web-api-node');
-var searchRouter = require('./routes/search');
-var bodyParser = require('body-parser');
+const path = require('path');
+const bodyParser = require('body-parser');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(express.static('public'));
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
-
-app.use('/search', searchRouter)
-
-app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/public/index.html');
-  });
 
 // Remember to paste here your credentials
 var spotifyApi = new SpotifyWebApi({
@@ -53,6 +48,11 @@ app.get('/callback', (req, res) => {
     });
 });
 
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) =>{
+  res.sendFile(path.join(__dirname+'/client/build/index.html'));
+});
+
 app.listen(port, () => {
-    console.log('App listening at http://localhost:${port}');
+  console.log(`Server is listening on port ${port}`);
 });
