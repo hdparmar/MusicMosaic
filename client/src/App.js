@@ -1,5 +1,5 @@
 // src/App.js
-
+import './App.css'
 import React, { useState } from 'react';
 import Login from './components/Login';
 import Search from './components/Search';
@@ -20,8 +20,8 @@ function App() {
     <div className="App">
       {loggedIn ? (
         <div>
-          <Search setResults={setResults} />
-          <Results results={results} />
+          <Search className="search" setResults={setResults} />
+          <Results className="results" results={results} />
         </div>
       ) : (
         <Login />
