@@ -1,12 +1,21 @@
 # MusicMosaic
-MusicMosaic: A music search and discovery platform using NLP, Spotify, and lyrics API in a micro-services architecture.
-This project serves as a learning exercise in JavaScript, Node.js, Express, and the MQTT protocol. It provides a hands-on experience with these technologies by building a real-world application.
+
+MusicMosaic is a music search and discovery platform that utilizes Natural Language Processing (NLP), Spotify, and the lyrics API in a microservices architecture. This project serves as a hands-on learning exercise in JavaScript, React, Node.js, Express, MQTT, and React.
 
 ## Features
 
-- User-friendly search: Enter a sentence describing the music you're looking for, and get a list of matching songs from Spotify.
-- OAuth2 authentication: Log in with your Spotify account to get personalized recommendations.
-- Microservices architecture: The application is split into several services communicating over MQTT, demonstrating the use of this protocol in a microservices context.
+- User-friendly search: Enter a sentence describing the music you're looking for, and MusicMosaic will provide a list of matching songs from Spotify.
+- Filtered search results: The search results are tailored to show only Indie artists based on the subscribers/listeners of the artist. This feature aims to promote the discovery of new Indie artists, expand users' music tastes, and provide increased traction and exposure for Indie artists.
+- OAuth2 authentication: Log in with your Spotify account to receive personalized recommendations.
+- Microservices architecture: The application is divided into multiple services that communicate over MQTT, showcasing the use of this protocol in a microservices context.
 
+## Current Updates
 
-Stay tuned for more updates!
+- Client-side development with React: MusicMosaic now utilizes React for the client-side implementation, enhancing the user interface and providing a more interactive experience.
+
+## To-Do List
+
+- [ ] Implement search query using NLP to discover Indie artists based on user input.
+- [ ] Display search results with the filtered list of Indie artists.
+
+Stay tuned for more updates as MusicMosaic evolves!
