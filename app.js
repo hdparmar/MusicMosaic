@@ -2,21 +2,22 @@ const express = require('express');
 const SpotifyWebApi = require('spotify-web-api-node');
 const path = require('path');
 const bodyParser = require('body-parser');
+require('dotenv').config()
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5001;
 
 // Serve the static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+//app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(bodyParser.json());
 
 // Remember to paste here your credentials
 var spotifyApi = new SpotifyWebApi({
-  clientId: '',
-  clientSecret: '',
-  redirectUri: 'http://localhost:3000/callback'
+  clientId: process.env.SPOTIFY_CLIENT_ID,
+  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  redirectUri: process.env.REDIRECT_URI
 });
 
 // The /login route redirects the user to the Spotify Accounts service for them to log in
@@ -48,10 +49,12 @@ app.get('/callback', (req, res) => {
     });
 });
 
+/*
 // Handles any requests that don't match the ones above
 app.get('*', (req, res) =>{
   res.sendFile(path.join(__dirname+'/client/build/index.html'));
 });
+*/
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
