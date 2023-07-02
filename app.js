@@ -9,7 +9,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
 app.use(cookieParser());
 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
@@ -36,7 +38,8 @@ app.get('/login', (req, res) => {
               const token = response.data.access_token;
               // Use the token
               // For example, you can send it back to the client
-              res.json({access_token: token});
+              res.set("Access-Control-Allow-Origin", "http://localhost:3000"); // add the CORS header
+              res.send(token); // send the token as a string
           }
       })
       .catch(error => {
