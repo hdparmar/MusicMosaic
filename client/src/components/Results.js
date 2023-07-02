@@ -2,16 +2,17 @@
 
 import React from 'react';
 
-const Results = ({ results }) => {
+function Results({ results }) {
   return (
     <div>
-      {results.map(result => (
-        <div key={result.id}>
-          {/* Display the result here. This will depend on the structure of the result object. */}
+      {results.map((result, index) => (
+        <div key={index}>
+          <h3>{result.name}</h3>
+          <p>{result.description}</p>
         </div>
       ))}
     </div>
   );
-};
+}
 
 export default Results;
