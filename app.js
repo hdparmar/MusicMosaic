@@ -3,59 +3,127 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const path = require('path');
 const bodyParser = require('body-parser');
 require('dotenv').config()
+const axios = require('axios').default;
+const querystring = require('querystring');
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const app = express();
-const port = process.env.PORT || 5001;
+app.use(cors());
+app.use(cookieParser());
 
-// Serve the static files from the React app
-//app.use(express.static(path.join(__dirname, 'client/build')));
+const client_id = process.env.SPOTIFY_CLIENT_ID;
+const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
+const redirect_uri = process.env.REDIRECT_URI;
 
-app.use(bodyParser.urlencoded({ extended: false}));
-app.use(bodyParser.json());
-
-// Remember to paste here your credentials
-var spotifyApi = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-  redirectUri: process.env.REDIRECT_URI
-});
-
-// The /login route redirects the user to the Spotify Accounts service for them to log in
 app.get('/login', (req, res) => {
-  var scopes = ['user-read-private', 'user-read-email'];
-  res.redirect(spotifyApi.createAuthorizeURL(scopes));
+  const authOptions = {
+      url: 'https://accounts.spotify.com/api/token',
+      method: 'post',
+      params: {
+          grant_type: 'client_credentials'
+      },
+      headers: {
+          'Authorization': 'Basic ' + Buffer.from(client_id + ':' + client_secret).toString('base64'),
+          'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      json: true
+  };
+
+  axios(authOptions)
+      .then(response => {
+          if (response.status === 200) {
+              const token = response.data.access_token;
+              // Use the token
+              // For example, you can send it back to the client
+              res.json({access_token: token});
+          }
+      })
+      .catch(error => {
+          console.error(`Failed to get token: ${error}`);
+          res.status(500).send('Failed to get token');
+      });
 });
 
-// The /callback route is where the user is redirected after they log in
+
 app.get('/callback', (req, res) => {
-  // The authorization code is provided as a URL parameter
-  var code = req.query.code;
+    const code = req.query.code || null;
+    const authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        form: {
+            code: code,
+            redirect_uri: redirect_uri,
+            grant_type: 'authorization_code'
+        },
+        headers: {
+            'Authorization': 'Basic ' + (Buffer.from(client_id + ':' + client_secret).toString('base64'))
+        },
+        json: true
+    };
 
-  // Use the authorization code to get an access token
-  spotifyApi.authorizationCodeGrant(code)
-    .then(data => {
-      console.log('The token expires in ' + data.body['expires_in']);
-      console.log('The access token is ' + data.body['access_token']);
-      console.log('The refresh token is ' + data.body['refresh_token']);
+    axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers})
+        .then(response => {
+            const access_token = response.data.access_token;
+            const refresh_token = response.data.refresh_token;
 
-      // Set the access token on the API object to use it in later calls
-      spotifyApi.setAccessToken(data.body['access_token']);
-      spotifyApi.setRefreshToken(data.body['refresh_token']);
+            res.redirect('/#' +
+                querystring.stringify({
+                    access_token: access_token,
+                    refresh_token: refresh_token
+                }));
+        })
+        .catch(error => {
+            console.error(`Failed to get token: ${error}`);
+            res.redirect('/#' +
+                querystring.stringify({
+                    error: 'invalid_token'
+                }));
+        });
+});
 
-      res.redirect('/');
+app.get('/refresh_token', (req, res) => {
+    const refresh_token = req.query.refresh_token;
+    const authOptions = {
+        url: 'https://accounts.spotify.com/api/token',
+        headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+        form: {
+            grant_type: 'refresh_token',
+            refresh_token: refresh_token
+        },
+        json: true
+    };
+
+    axios.post(authOptions.url, authOptions.form, {headers: authOptions.headers})
+        .then(response => {
+            const access_token = response.data.access_token;
+            res.send({
+                'access_token': access_token
+            });
+        })
+        .catch(error => {
+            console.error(`Failed to refresh token: ${error}`);
+        });
+});
+
+app.get('/search', (req, res) => {
+    const query = req.query.query;
+    const token = req.headers.authorization.split(' ')[1]; // Bearer <token>
+
+    axios.get(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
     })
-    .catch(err => {
-      console.log('Something went wrong!', err);
-    });
+        .then(response => {
+            res.json(response.data.tracks.items);
+        })
+        .catch(error => {
+            console.error(`Search request failed: ${error}`);
+            res.status(500).send('Search request failed');
+        });
 });
 
-/*
-// Handles any requests that don't match the ones above
-app.get('*', (req, res) =>{
-  res.sendFile(path.join(__dirname+'/client/build/index.html'));
-});
-*/
-
+const port = process.env.PORT || 5001;
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
