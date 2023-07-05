@@ -1,32 +1,17 @@
-// src/components/Login.js
-import React, { useContext } from 'react';
-import AuthContext from '../AuthContext';
+import React from 'react';
 
-function Login() {
-  const setToken = useContext(AuthContext);
-
+const Login = () => {
   const handleLogin = () => {
-    // fetch the token from your server when the login button is clicked
-    fetch('http://localhost:5001/login', {
-      headers: {
-        'Accept': 'application/json'
-      }
-    })
-      .then(response => {
-        console.log(response);
-        return response.json();
-      }) // get the response as json
-      .then(data => {
-        // set the token in state
-        setToken(data.access_token);
-      });
+    // Redirect to the Express server's /login route
+    window.location.href = 'http://localhost:5001/login';
   };
 
   return (
     <div>
-      <button onClick={handleLogin}>Login</button>
+      <h1>Welcome to our Spotify app!</h1>
+      <button onClick={handleLogin}>Log in with Spotify</button>
     </div>
   );
-}
+};
 
 export default Login;

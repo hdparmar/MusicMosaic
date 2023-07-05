@@ -1,35 +1,42 @@
-// src/components/Search.js
+import React, { useState, useEffect } from 'react';
 
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import AuthContext from '../AuthContext';
-
-function Search({ setAppResults }) {
-  const token = useContext(AuthContext); // Get the token from context
+const Search = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [accessToken, setAccessToken] = useState('');
 
   useEffect(() => {
-    console.log(token); // Log the token
-  }, [token]); // Depend on the token
+    // Extract the access token from the URL
+    const hash = window.location.hash;
+    const token = new URLSearchParams(hash.substr(1)).get('access_token');
 
-  const [query, setQuery] = useState('');
+    console.log('Access token:', token);
 
-  const handleSearch = async (event) => {
+    setAccessToken(token);
+  }, []);
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  }
+
+  const handleSearchSubmit = (event) => {
     event.preventDefault();
-    
-    const response = await axios.get(`/search?query=${query}`);
-    setAppResults(response.data);
-  };
+    fetch(`https://api.spotify.com/v1/search?q=${searchQuery}&type=track`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    })
+      .then(response => response.json())
+      .then(data => console.log(data));
+  }
 
   return (
-    <form onSubmit={handleSearch}>
-      <input 
-        type="text" 
-        value={query} 
-        onChange={(event) => setQuery(event.target.value)} 
-      />
-      <button type="submit">Search</button>
-    </form>
+    <div>
+      <form onSubmit={handleSearchSubmit}>
+        <input type="text" value={searchQuery} onChange={handleSearchChange} />
+        <button type="submit">Search</button>
+      </form>
+    </div>
   );
-}
+};
 
 export default Search;
