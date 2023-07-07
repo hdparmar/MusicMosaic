@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import mqtt from 'mqtt';
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -8,9 +9,7 @@ const Search = () => {
     // Extract the access token from the URL
     const hash = window.location.hash;
     const token = new URLSearchParams(hash.substr(1)).get('access_token');
-
     console.log('Access token:', token);
-
     setAccessToken(token);
   }, []);
 
@@ -20,13 +19,22 @@ const Search = () => {
 
   const handleSearchSubmit = (event) => {
     event.preventDefault();
-    fetch(`https://api.spotify.com/v1/search?q=${searchQuery}&type=track`, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`
+
+    // Connecting to MQTT Broker
+    const client = mqtt.connect('mqtt://localhost:1883');
+
+    client.on('connect', () => {
+      // When connected, publish the user's search request and the access token
+      client.publish('spotify/search', JSON.stringify({ searchQuery, accessToken }));
+      //client.end(); // Close the connection when you're done
+    });
+    client.on('message', (topic, message) => {
+      if (topic === 'spotify/search/results') {
+        const results = JSON.parse(message.toString());
+        console.log(results); // Log the results
+        // Update your state with the results...
       }
-    })
-      .then(response => response.json())
-      .then(data => console.log(data));
+    });
   }
 
   return (
