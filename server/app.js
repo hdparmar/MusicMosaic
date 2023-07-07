@@ -5,6 +5,7 @@ const request = require('request'); // We'll use this to make HTTP requests
 const cors = require('cors');
 const querystring = require('querystring');
 
+require('../services/search_service');
 const app = express();
 
 // Add middleware
