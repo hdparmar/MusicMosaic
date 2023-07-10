@@ -1,7 +1,8 @@
 # MusicMosaic
 
-MusicMosaic is a music search and discovery platform that utilizes Natural Language Processing (NLP), Spotify, and the lyrics API in a microservices architecture. This project serves as a hands-on learning exercise in JavaScript, React, Node.js, Express, MQTT.
+MusicMosaic is a music search and discovery platform that utilizes Natural Language Processing (NLP), Spotify, and the lyrics API in a microservices architecture. This project serves as a hands-on learning exercise in JavaScript, React, Node.js, Express, MQTT & WebSocket.
 
+Because MQTT is not natively supported in the browser so have to use MQTT over WebSockets.
 ## Features
 
 - User-friendly search: Enter a sentence describing the music you're looking for, and MusicMosaic will provide a list of matching songs from Spotify.
@@ -15,6 +16,7 @@ MusicMosaic is a music search and discovery platform that utilizes Natural Langu
 
 ## To-Do List
 
+- [ ] To Establish proper communication between Client and Server through, MQTT over WebScokets.
 - [ ] Implement search query with MQTT. Text as User a request and a service to fetch songs.
 - [ ] After, implementing search query, try NLP to better filter the result.
 - [ ] Display search results with the filtered list of Indie artists.
