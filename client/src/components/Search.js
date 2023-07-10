@@ -21,7 +21,8 @@ const Search = () => {
     event.preventDefault();
 
     // Connecting to MQTT Broker
-    const client = mqtt.connect('mqtt://localhost:1883');
+    const mqtt = require('mqtt');
+    const client = mqtt.connect('ws://localhost:9001');
 
     client.on('connect', () => {
       // When connected, publish the user's search request and the access token
